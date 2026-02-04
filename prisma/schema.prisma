@@ -1,0 +1,118 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum NotificationType {
+  REPLY_ON_THREAD
+  LIKE_ON_THREAD
+}
+
+model User {
+  id                 BigInt           @id @default(autoincrement())
+  clerkUserId        String           @unique @map("clerk_user_id")
+  displayName        String?          @map("display_name")
+  handle             String?          @unique
+  avatarUrl          String?          @map("avatar_url")
+  bio                String?
+  createdAt          DateTime         @default(now()) @map("created_at")
+  updatedAt          DateTime         @default(now()) @updatedAt @map("updated_at")
+  threads            Thread[]         @relation("ThreadAuthor")
+  replies            Reply[]
+  threadReactions    ThreadReaction[]
+  notifications      Notification[]   @relation("NotificationUser")
+  actedNotifications Notification[]   @relation("NotificationActor")
+  sentMessages       DirectMessage[]  @relation("SentMessages")
+  receivedMessages   DirectMessage[]  @relation("ReceivedMessages")
+
+  @@map("users")
+}
+
+model Category {
+  id          BigInt   @id @default(autoincrement())
+  slug        String   @unique
+  name        String
+  description String?
+  threads     Thread[]
+
+  @@map("categories")
+}
+
+model Thread {
+  id            BigInt           @id @default(autoincrement())
+  categoryId    BigInt           @map("category_id")
+  category      Category         @relation(fields: [categoryId], references: [id])
+  authorUserId  BigInt           @map("author_user_id")
+  author        User             @relation("ThreadAuthor", fields: [authorUserId], references: [id])
+  title         String
+  body          String
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @default(now()) @updatedAt @map("updated_at")
+  replies       Reply[]
+  reactions     ThreadReaction[]
+  notifications Notification[]
+
+  @@index([categoryId, createdAt(sort: Desc)], name: "idx_threads_category_created_at")
+  @@map("threads")
+}
+
+model Reply {
+  id           BigInt   @id @default(autoincrement())
+  threadId     BigInt   @map("thread_id")
+  thread       Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  authorUserId BigInt   @map("author_user_id")
+  author       User     @relation(fields: [authorUserId], references: [id], onDelete: Cascade)
+  body         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([threadId, createdAt(sort: Asc)], name: "idx_replies_thread_created_at")
+  @@map("replies")
+}
+
+model ThreadReaction {
+  id        BigInt   @id @default(autoincrement())
+  threadId  BigInt   @map("thread_id")
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId    BigInt   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([threadId, userId])
+  @@index([threadId], name: "idx_thread_reactions_thread")
+  @@map("thread_reactions")
+}
+
+model Notification {
+  id          BigInt           @id @default(autoincrement())
+  userId      BigInt           @map("user_id")
+  user        User             @relation("NotificationUser", fields: [userId], references: [id], onDelete: Cascade)
+  actorUserId BigInt           @map("actor_user_id")
+  actor       User             @relation("NotificationActor", fields: [actorUserId], references: [id], onDelete: Cascade)
+  threadId    BigInt           @map("thread_id")
+  thread      Thread           @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  type        NotificationType
+  createdAt   DateTime         @default(now()) @map("created_at")
+  readAt      DateTime?        @map("read_at")
+
+  @@index([userId, readAt], name: "idx_notifications_user_read")
+  @@map("notifications")
+}
+
+model DirectMessage {
+  id              BigInt   @id @default(autoincrement())
+  senderUserId    BigInt   @map("sender_user_id")
+  sender          User     @relation("SentMessages", fields: [senderUserId], references: [id], onDelete: Cascade)
+  recipientUserId BigInt   @map("recipient_user_id")
+  recipient       User     @relation("ReceivedMessages", fields: [recipientUserId], references: [id], onDelete: Cascade)
+  body            String?
+  imageUrl        String?  @map("image_url")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([senderUserId, recipientUserId, createdAt(sort: Desc)], name: "idx_dm_sender_recipient_created_at")
+  @@map("direct_messages")
+}
