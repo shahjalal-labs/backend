@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -71,7 +62,7 @@ const ALLOWED_MIME_TYPES = [
  * @returns {Promise<string>} - The URL of the uploaded file
  * @throws {Error} - If file validation fails or upload fails
  */
-const uploadInSpace = (file, folder) => __awaiter(void 0, void 0, void 0, function* () {
+const uploadInSpace = async (file, folder) => {
     try {
         if (!file) {
             throw new Error("No file provided");
@@ -100,7 +91,7 @@ const uploadInSpace = (file, folder) => __awaiter(void 0, void 0, void 0, functi
             client: s3,
             params: uploadParams,
         });
-        const data = yield upload.done();
+        const data = await upload.done();
         const fileUrl = data.Location ||
             `${DO_CONFIG.endpoint}/${DO_CONFIG.spaceName}/${fileName}`;
         return fileUrl;
@@ -111,5 +102,5 @@ const uploadInSpace = (file, folder) => __awaiter(void 0, void 0, void 0, functi
             ? `Failed to upload file: ${error.message}`
             : "Failed to upload file to DigitalOcean Spaces");
     }
-});
+};
 exports.uploadInSpace = uploadInSpace;

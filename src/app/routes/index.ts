@@ -17,18 +17,6 @@ const allRoutes: TAllRoutes[] = [
     path: "/user",
     route: UserRoutes,
   },
-  {
-    path: "/auth",
-    route: AuthRoutes,
-  },
-  {
-    path: "/notify",
-    route: NotificationRoutes,
-  },
-  {
-    path: "/payment",
-    route: PaymentRoutes,
-  },
 ];
 //w: (end)  ╰──────────── allRoutes ────────────╯
 

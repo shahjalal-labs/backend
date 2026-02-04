@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -20,14 +11,14 @@ const ApiErrors_1 = __importDefault(require("../../../errors/ApiErrors"));
 const http_status_1 = __importDefault(require("http-status"));
 const paginationHelper_1 = require("../../../shared/paginationHelper");
 //w: (start)╭──────────── sendSingleNotification ────────────╮
-const sendSingleNotification = (receiverId, title, body, type, notificationChannel, senderId, metaData) => __awaiter(void 0, void 0, void 0, function* () {
-    const receiverInfo = yield prisma_1.default.user.findUnique({
+const sendSingleNotification = async (receiverId, title, body, type, notificationChannel, senderId, metaData) => {
+    const receiverInfo = await prisma_1.default.user.findUnique({
         where: { id: receiverId },
     });
     if (!receiverInfo) {
         throw new ApiErrors_1.default(http_status_1.default.NOT_FOUND, "reciever not found!");
     }
-    yield prisma_1.default.notification.create({
+    await prisma_1.default.notification.create({
         data: {
             receiverId,
             title,
@@ -53,14 +44,14 @@ const sendSingleNotification = (receiverId, title, body, type, notificationChann
                 notification: { title, body },
                 tokens,
             };
-            const response = yield firebaseAdmin_1.default.messaging().sendEachForMulticast(message);
+            const response = await firebaseAdmin_1.default.messaging().sendEachForMulticast(message);
             console.log(response, "fcm response", 54);
             // remove invalid tokens
             const invalidTokens = response.responses
                 .map((res, idx) => (!res.success ? tokens[idx] : null))
                 .filter(Boolean);
             if (invalidTokens.length) {
-                yield prisma_1.default.user.update({
+                await prisma_1.default.user.update({
                     where: { id: receiverId },
                     data: {
                         fcmTokens: {
@@ -75,15 +66,15 @@ const sendSingleNotification = (receiverId, title, body, type, notificationChann
         console.log(error);
         return;
     }
-});
+};
 exports.sendSingleNotification = sendSingleNotification;
 //w: (end)  ╰──────────── sendSingleNotification ────────────╯
 //w: (start)╭──────────── sendNotifToManyUser ────────────╮
-const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel, senderId, metaData) => __awaiter(void 0, void 0, void 0, function* () {
+const sendNotifToManyUser = async (receiverIds, title, body, type, notificationChannel, senderId, metaData) => {
     if (!receiverIds.length)
         return;
     // Fetch all receivers
-    const receivers = yield prisma_1.default.user.findMany({
+    const receivers = await prisma_1.default.user.findMany({
         where: { id: { in: receiverIds } },
     });
     if (!receivers.length) {
@@ -100,7 +91,7 @@ const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel
         type,
         metaData,
     }));
-    yield prisma_1.default.notification.createMany({
+    await prisma_1.default.notification.createMany({
         data: notificationsData,
     });
     if (notificationChannel === client_1.NotificationChannel.INAPP) {
@@ -123,7 +114,7 @@ const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel
             notification: { title, body },
             tokens: allTokens,
         };
-        const response = yield firebaseAdmin_1.default.messaging().sendEachForMulticast(message);
+        const response = await firebaseAdmin_1.default.messaging().sendEachForMulticast(message);
         console.log(response, "FCM response");
         // Remove invalid tokens per user
         // Build token → userId map
@@ -136,9 +127,8 @@ const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel
         // Collect invalid tokens per user
         const tokensToRemoveByUser = {};
         response.responses.forEach((res, idx) => {
-            var _a;
             if (!res.success) {
-                const code = (_a = res.error) === null || _a === void 0 ? void 0 : _a.code;
+                const code = res.error?.code;
                 if (code === "messaging/registration-token-not-registered" ||
                     code === "messaging/invalid-registration-token") {
                     const token = allTokens[idx];
@@ -153,7 +143,7 @@ const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel
             }
         });
         // Update each user once
-        yield Promise.all(Object.entries(tokensToRemoveByUser).map(([userId, tokensToRemove]) => {
+        await Promise.all(Object.entries(tokensToRemoveByUser).map(([userId, tokensToRemove]) => {
             const currentTokens = tokenMap[userId] || [];
             const updatedTokens = currentTokens.filter((t) => !tokensToRemove.has(t));
             if (updatedTokens.length === currentTokens.length)
@@ -167,15 +157,18 @@ const sendNotifToManyUser = (receiverIds, title, body, type, notificationChannel
     catch (err) {
         console.error("Error sending FCM notifications:", err);
     }
-});
+};
 exports.sendNotifToManyUser = sendNotifToManyUser;
 //w: (end)  ╰──────────── sendNotifToManyUser ────────────╯
 //w: (start)╭──────────── getMyNotifications ────────────╮
-const getMyNotifications = (userId, options, isRead) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyNotifications = async (userId, options, isRead) => {
     const { page, skip, limit } = paginationHelper_1.paginationHelper.calcalutePagination(options);
-    const [data, total] = yield Promise.all([
+    const [data, total] = await Promise.all([
         prisma_1.default.notification.findMany({
-            where: Object.assign({ receiverId: userId }, (typeof isRead === "boolean" ? { isRead } : {})),
+            where: {
+                receiverId: userId,
+                ...(typeof isRead === "boolean" ? { isRead } : {}),
+            },
             select: {
                 id: true,
                 title: true,
@@ -213,11 +206,11 @@ const getMyNotifications = (userId, options, isRead) => __awaiter(void 0, void 0
         },
         data,
     };
-});
+};
 //w: (end)  ╰──────────── getMyNotifications ────────────╯
 //w: (start)╭──────────── markAllAsReadUnread ────────────╮
-const markAllAsReadUnread = (userId, isRead) => __awaiter(void 0, void 0, void 0, function* () {
-    yield prisma_1.default.notification.updateMany({
+const markAllAsReadUnread = async (userId, isRead) => {
+    await prisma_1.default.notification.updateMany({
         where: {
             receiverId: userId,
         },
@@ -225,11 +218,11 @@ const markAllAsReadUnread = (userId, isRead) => __awaiter(void 0, void 0, void 0
             isRead,
         },
     });
-});
+};
 //w: (end)  ╰──────────── markAllAsReadUnread ────────────╯
 //w: (start)╭──────────── getSingleNotifyAndMarkRead ────────────╮
-const getSingleNotifAndMarkRead = (userId, notifId) => __awaiter(void 0, void 0, void 0, function* () {
-    const notif = yield prisma_1.default.notification.findUnique({
+const getSingleNotifAndMarkRead = async (userId, notifId) => {
+    const notif = await prisma_1.default.notification.findUnique({
         where: {
             id: notifId,
         },
@@ -240,7 +233,7 @@ const getSingleNotifAndMarkRead = (userId, notifId) => __awaiter(void 0, void 0,
     if (notif.receiverId !== userId) {
         throw new ApiErrors_1.default(http_status_1.default.UNAUTHORIZED, "You are not authorized to view  other's notification");
     }
-    const updatedNotif = yield prisma_1.default.notification.update({
+    const updatedNotif = await prisma_1.default.notification.update({
         where: {
             id: notifId,
         },
@@ -249,17 +242,17 @@ const getSingleNotifAndMarkRead = (userId, notifId) => __awaiter(void 0, void 0,
         },
     });
     return updatedNotif;
-});
+};
 //w: (end)  ╰──────────── getSingleNotifyAndMarkRead ────────────╯
 //w: (start)╭──────────── getUnreadCount ────────────╮
-const getUnreadCount = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield prisma_1.default.notification.count({
+const getUnreadCount = async (userId) => {
+    return await prisma_1.default.notification.count({
         where: {
             receiverId: userId,
             isRead: false,
         },
     });
-});
+};
 //w: (end)  ╰──────────── getUnreadCount ────────────╯
 exports.NotificationService = {
     sendSingleNotification: exports.sendSingleNotification,

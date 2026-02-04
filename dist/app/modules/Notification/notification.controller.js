@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -21,19 +12,19 @@ const paginationHelper_1 = require("../../../shared/paginationHelper");
 const pick_1 = require("../../../shared/pick");
 //w: (start)╭──────────── sendSingleNotification ────────────╮
 //send test notification
-const sendSingleNotification = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const sendSingleNotification = (0, catchAsync_1.default)(async (req, res) => {
     const { receiverId, title, body, type, senderId, handlerId, notificationChannel, } = req.body;
-    yield notification_service_1.NotificationService.sendSingleNotification(receiverId, title, body, type, notificationChannel, senderId, handlerId);
+    await notification_service_1.NotificationService.sendSingleNotification(receiverId, title, body, type, notificationChannel, senderId, handlerId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "Test notification send successfully",
         data: null,
     });
-}));
+});
 //w: (end)  ╰──────────── sendSingleNotification ────────────╯
 //w: (start)╭──────────── getMyNotifications ────────────╮
-const getMyNotifications = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyNotifications = (0, catchAsync_1.default)(async (req, res) => {
     const { id: userId } = req.user;
     const options = (0, pick_1.pick)(req.query, paginationHelper_1.paginationOptions);
     let { isRead } = req.query;
@@ -50,19 +41,19 @@ const getMyNotifications = (0, catchAsync_1.default)((req, res) => __awaiter(voi
             isRead = "all";
         }
     }
-    const result = yield notification_service_1.NotificationService.getMyNotifications(userId, options, isRead);
+    const result = await notification_service_1.NotificationService.getMyNotifications(userId, options, isRead);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "Fetched my notifications successfully",
         data: result,
     });
-}));
+});
 //w: (end)  ╰──────────── getMyNotifications ────────────╯
 //w: (start)╭──────────── getUnreadCount ────────────╮
-const getUnreadCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getUnreadCount = (0, catchAsync_1.default)(async (req, res) => {
     const { id: userId } = req.user;
-    const result = yield notification_service_1.NotificationService.getUnreadCount(userId);
+    const result = await notification_service_1.NotificationService.getUnreadCount(userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -71,33 +62,33 @@ const getUnreadCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
             unreadCount: result,
         },
     });
-}));
+});
 //w: (end)  ╰──────────── getUnreadCount ────────────╯
 //w: (start)╭──────────── getSingleNotifAndMarkRead ────────────╮
-const getSingleNotifAndMarkRead = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleNotifAndMarkRead = (0, catchAsync_1.default)(async (req, res) => {
     const { id: userId } = req.user;
     const { id: notifId } = req.params;
-    const result = yield notification_service_1.NotificationService.getSingleNotifAndMarkRead(userId, notifId);
+    const result = await notification_service_1.NotificationService.getSingleNotifAndMarkRead(userId, notifId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "Notification fetched successfully",
         data: result,
     });
-}));
+});
 //w: (end)  ╰──────────── getSingleNotifAndMarkRead ────────────╯
 //w: (start)╭──────────── markAllAsReadUnread ────────────╮
-const markAllAsReadUnread = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const markAllAsReadUnread = (0, catchAsync_1.default)(async (req, res) => {
     const { id: userId } = req.user;
     const { isRead } = req.body;
-    const result = yield notification_service_1.NotificationService.markAllAsReadUnread(userId, isRead);
+    const result = await notification_service_1.NotificationService.markAllAsReadUnread(userId, isRead);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "Status change successfully",
         data: result,
     });
-}));
+});
 //w: (end)  ╰──────────── markAllAsReadUnread ────────────╯
 exports.NotificationController = {
     sendSingleNotification,

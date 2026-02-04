@@ -50,25 +50,25 @@ const GlobalErrorHandler = (error, req, res, next) => {
     }
     // Handle Custom ApiError
     else if (error instanceof ApiErrors_1.default) {
-        statusCode = error === null || error === void 0 ? void 0 : error.statusCode;
+        statusCode = error?.statusCode;
         message = error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
     }
     // Handle Errors
     else if (error instanceof Error) {
-        message = error === null || error === void 0 ? void 0 : error.message;
-        errorMessages = (error === null || error === void 0 ? void 0 : error.message)
+        message = error?.message;
+        errorMessages = error?.message
             ? [
                 {
                     path: "",
-                    message: error === null || error === void 0 ? void 0 : error.message,
+                    message: error?.message,
                 },
             ]
             : [];
@@ -154,7 +154,7 @@ const GlobalErrorHandler = (error, req, res, next) => {
         message,
         errorMessages,
         err: error,
-        stack: config_1.default.env !== "production" ? error === null || error === void 0 ? void 0 : error.stack : undefined,
+        stack: config_1.default.env !== "production" ? error?.stack : undefined,
     });
 };
 exports.default = GlobalErrorHandler;

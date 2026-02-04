@@ -24,23 +24,14 @@ const validateRequest =
   };
 
 export default validateRequest; */
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const zod_1 = require("zod");
-const validateRequest = (schemas) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const validateRequest = (schemas) => async (req, res, next) => {
     const errors = [];
     // Validate body
     if (schemas.body) {
         try {
-            yield schemas.body.parseAsync(req.body);
+            await schemas.body.parseAsync(req.body);
         }
         catch (err) {
             if (err instanceof zod_1.ZodError) {
@@ -54,7 +45,7 @@ const validateRequest = (schemas) => (req, res, next) => __awaiter(void 0, void 
     // Validate query
     if (schemas.query) {
         try {
-            yield schemas.query.parseAsync(req.query);
+            await schemas.query.parseAsync(req.query);
         }
         catch (err) {
             if (err instanceof zod_1.ZodError) {
@@ -68,7 +59,7 @@ const validateRequest = (schemas) => (req, res, next) => __awaiter(void 0, void 
     // Validate params
     if (schemas.params) {
         try {
-            yield schemas.params.parseAsync(req.params);
+            await schemas.params.parseAsync(req.params);
         }
         catch (err) {
             if (err instanceof zod_1.ZodError) {
@@ -93,5 +84,5 @@ const validateRequest = (schemas) => (req, res, next) => __awaiter(void 0, void 
         });
     }
     return next();
-});
+};
 exports.default = validateRequest;
