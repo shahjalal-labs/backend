@@ -1,6 +1,12 @@
-import { S3Client } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import path from "path";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.uploadInSpace = void 0;
+const client_s3_1 = require("@aws-sdk/client-s3");
+const lib_storage_1 = require("@aws-sdk/lib-storage");
+const path_1 = __importDefault(require("path"));
 /* const DO_CONFIG = {
   endpoint: "https://api.zenexcloud.com",
 
@@ -32,7 +38,7 @@ const s3Config = {
     credentials: DO_CONFIG.credentials,
     forcePathStyle: true,
 };
-const s3 = new S3Client(s3Config);
+const s3 = new client_s3_1.S3Client(s3Config);
 const MAX_FILE_SIZE = 3000 * 1024 * 1024; // 3000 MB
 // Allowed MIME types
 const ALLOWED_MIME_TYPES = [
@@ -56,7 +62,7 @@ const ALLOWED_MIME_TYPES = [
  * @returns {Promise<string>} - The URL of the uploaded file
  * @throws {Error} - If file validation fails or upload fails
  */
-export const uploadInSpace = async (file, folder) => {
+const uploadInSpace = async (file, folder) => {
     try {
         if (!file) {
             throw new Error("No file provided");
@@ -70,7 +76,7 @@ export const uploadInSpace = async (file, folder) => {
             throw new Error("File type not allowed");
         }
         // Generate a unique filename with original extension
-        const fileExtension = path.extname(file.originalname);
+        const fileExtension = path_1.default.extname(file.originalname);
         const fileName = `uploads/${folder}/${Date.now()}-${Math.random()
             .toString(36)
             .substring(2, 15)}${fileExtension}`;
@@ -81,7 +87,7 @@ export const uploadInSpace = async (file, folder) => {
             ACL: "public-read",
             ContentType: file.mimetype,
         };
-        const upload = new Upload({
+        const upload = new lib_storage_1.Upload({
             client: s3,
             params: uploadParams,
         });
@@ -97,3 +103,4 @@ export const uploadInSpace = async (file, folder) => {
             : "Failed to upload file to DigitalOcean Spaces");
     }
 };
+exports.uploadInSpace = uploadInSpace;

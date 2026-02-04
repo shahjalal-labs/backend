@@ -1,4 +1,7 @@
-export const blockPostmanRequests = (req, res, next) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.blockPostmanRequests = void 0;
+const blockPostmanRequests = (req, res, next) => {
     const userAgent = req.headers["user-agent"];
     if (userAgent && userAgent.includes("PostmanRuntime")) {
         return res
@@ -7,3 +10,4 @@ export const blockPostmanRequests = (req, res, next) => {
     }
     next();
 };
+exports.blockPostmanRequests = blockPostmanRequests;

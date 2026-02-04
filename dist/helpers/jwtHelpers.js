@@ -1,16 +1,22 @@
-import jwt from "jsonwebtoken";
-import config from "../config";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.jwtHelpers = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = __importDefault(require("../config"));
 const generateToken = (payload) => {
-    const token = jwt.sign(payload, config.jwt.jwt_secret, {
+    const token = jsonwebtoken_1.default.sign(payload, config_1.default.jwt.jwt_secret, {
         algorithm: "HS256",
-        expiresIn: config.jwt.expires_in,
+        expiresIn: config_1.default.jwt.expires_in,
     });
     return token;
 };
 const verifyToken = (token) => {
-    return jwt.verify(token, config.jwt.jwt_secret);
+    return jsonwebtoken_1.default.verify(token, config_1.default.jwt.jwt_secret);
 };
-export const jwtHelpers = {
+exports.jwtHelpers = {
     generateToken,
     verifyToken,
 };

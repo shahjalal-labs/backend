@@ -1,3 +1,4 @@
+"use strict";
 /* import { NextFunction, Request, Response } from "express";
 import { AnyZodObject, ZodError } from "zod";
 
@@ -23,7 +24,8 @@ const validateRequest =
   };
 
 export default validateRequest; */
-import { ZodError } from "zod";
+Object.defineProperty(exports, "__esModule", { value: true });
+const zod_1 = require("zod");
 const validateRequest = (schemas) => async (req, res, next) => {
     const errors = [];
     // Validate body
@@ -32,7 +34,7 @@ const validateRequest = (schemas) => async (req, res, next) => {
             await schemas.body.parseAsync(req.body);
         }
         catch (err) {
-            if (err instanceof ZodError) {
+            if (err instanceof zod_1.ZodError) {
                 errors.push({ type: "body", issues: err.issues });
             }
             else {
@@ -46,7 +48,7 @@ const validateRequest = (schemas) => async (req, res, next) => {
             await schemas.query.parseAsync(req.query);
         }
         catch (err) {
-            if (err instanceof ZodError) {
+            if (err instanceof zod_1.ZodError) {
                 errors.push({ type: "query", issues: err.issues });
             }
             else {
@@ -60,7 +62,7 @@ const validateRequest = (schemas) => async (req, res, next) => {
             await schemas.params.parseAsync(req.params);
         }
         catch (err) {
-            if (err instanceof ZodError) {
+            if (err instanceof zod_1.ZodError) {
                 errors.push({ type: "params", issues: err.issues });
             }
             else {
@@ -83,4 +85,4 @@ const validateRequest = (schemas) => async (req, res, next) => {
     }
     return next();
 };
-export default validateRequest;
+exports.default = validateRequest;

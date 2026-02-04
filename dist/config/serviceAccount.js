@@ -1,4 +1,7 @@
-export const serviceAccount = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.serviceAccount = void 0;
+exports.serviceAccount = {
     type: "service_account",
     project_id: "reffy-8f39a",
     private_key_id: "e25fad8d1ba53bc18b227039ed3b415a4150c16c",
