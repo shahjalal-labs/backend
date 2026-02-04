@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const prisma = new client_1.PrismaClient({
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient({
     log: [
         {
             emit: "event",
@@ -12,4 +10,4 @@ const prisma = new client_1.PrismaClient({
 prisma.$on("error", (e) => {
     console.log(e);
 });
-exports.default = prisma;
+export default prisma;

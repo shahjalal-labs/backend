@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.onboardingHtml = void 0;
-const onboardingHtml = async ({ fullName, accountLink }) => {
+export const onboardingHtml = async ({ fullName, accountLink }) => {
     const html = `
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; color: #333; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
       <h2 style="color: #2d87f0; text-align: center; font-size: 24px; font-weight: bold;">Complete Your Onboarding</h2>
@@ -34,4 +31,3 @@ const onboardingHtml = async ({ fullName, accountLink }) => {
   `;
     return html;
 };
-exports.onboardingHtml = onboardingHtml;

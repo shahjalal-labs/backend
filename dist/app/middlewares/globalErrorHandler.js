@@ -1,22 +1,17 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
-const http_status_1 = __importDefault(require("http-status"));
-const zod_1 = require("zod");
-const config_1 = __importDefault(require("../../config"));
-const handleZodError_1 = __importDefault(require("../../errors/handleZodError"));
-const handleClientError_1 = __importDefault(require("../../errors/handleClientError"));
-const ApiErrors_1 = __importDefault(require("../../errors/ApiErrors"));
+import { Prisma } from "@prisma/client";
+import httpStatus from "http-status";
+import { ZodError } from "zod";
+import config from "../../config";
+import handleZodError from "../../errors/handleZodError";
+import handleClientError from "../../errors/handleClientError";
+import ApiError from "../../errors/ApiErrors";
 const GlobalErrorHandler = (error, req, res, next) => {
-    let statusCode = http_status_1.default.INTERNAL_SERVER_ERROR;
+    let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     let message = error.message || "Something went wrong!";
     let errorMessages = [];
     // handle prisma client validation errors
-    if (error instanceof client_1.Prisma.PrismaClientValidationError) {
-        statusCode = http_status_1.default.BAD_REQUEST;
+    if (error instanceof Prisma.PrismaClientValidationError) {
+        statusCode = httpStatus.BAD_REQUEST;
         message = "Invalid input data. Please check the request payload.";
         const errorLines = error.message.split("\n");
         const lastLine = errorLines.slice(-1)[0];
@@ -35,21 +30,21 @@ const GlobalErrorHandler = (error, req, res, next) => {
         });
     }
     // Handle Zod Validation Errors
-    else if (error instanceof zod_1.ZodError) {
-        const simplifiedError = (0, handleZodError_1.default)(error);
+    else if (error instanceof ZodError) {
+        const simplifiedError = handleZodError(error);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorMessages = simplifiedError.errorMessages;
     }
     // Handle Prisma Client Known Request Errors
-    else if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
-        const simplifiedError = (0, handleClientError_1.default)(error);
+    else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        const simplifiedError = handleClientError(error);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorMessages = simplifiedError.errorMessages;
     }
     // Handle Custom ApiError
-    else if (error instanceof ApiErrors_1.default) {
+    else if (error instanceof ApiError) {
         statusCode = error?.statusCode;
         message = error.message;
         errorMessages = error?.message
@@ -74,8 +69,8 @@ const GlobalErrorHandler = (error, req, res, next) => {
             : [];
     }
     // Prisma Client Initialization Error
-    else if (error instanceof client_1.Prisma.PrismaClientInitializationError) {
-        statusCode = http_status_1.default.INTERNAL_SERVER_ERROR;
+    else if (error instanceof Prisma.PrismaClientInitializationError) {
+        statusCode = httpStatus.INTERNAL_SERVER_ERROR;
         message =
             "Failed to initialize Prisma Client. Check your database connection or Prisma configuration.";
         errorMessages = [
@@ -86,8 +81,8 @@ const GlobalErrorHandler = (error, req, res, next) => {
         ];
     }
     // Prisma Client Rust Panic Error
-    else if (error instanceof client_1.Prisma.PrismaClientRustPanicError) {
-        statusCode = http_status_1.default.INTERNAL_SERVER_ERROR;
+    else if (error instanceof Prisma.PrismaClientRustPanicError) {
+        statusCode = httpStatus.INTERNAL_SERVER_ERROR;
         message =
             "A critical error occurred in the Prisma engine. Please try again later.";
         errorMessages = [
@@ -98,8 +93,8 @@ const GlobalErrorHandler = (error, req, res, next) => {
         ];
     }
     // Prisma Client Unknown Request Error
-    else if (error instanceof client_1.Prisma.PrismaClientUnknownRequestError) {
-        statusCode = http_status_1.default.INTERNAL_SERVER_ERROR;
+    else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+        statusCode = httpStatus.INTERNAL_SERVER_ERROR;
         message = "An unknown error occurred while processing the request.";
         errorMessages = [
             {
@@ -110,7 +105,7 @@ const GlobalErrorHandler = (error, req, res, next) => {
     }
     // Generic Error Handling (e.g., JavaScript Errors)
     else if (error instanceof SyntaxError) {
-        statusCode = http_status_1.default.BAD_REQUEST;
+        statusCode = httpStatus.BAD_REQUEST;
         message = "Syntax error in the request. Please verify your input.";
         errorMessages = [
             {
@@ -120,7 +115,7 @@ const GlobalErrorHandler = (error, req, res, next) => {
         ];
     }
     else if (error instanceof TypeError) {
-        statusCode = http_status_1.default.BAD_REQUEST;
+        statusCode = httpStatus.BAD_REQUEST;
         message = "Type error in the application. Please verify your input.";
         errorMessages = [
             {
@@ -130,7 +125,7 @@ const GlobalErrorHandler = (error, req, res, next) => {
         ];
     }
     else if (error instanceof ReferenceError) {
-        statusCode = http_status_1.default.BAD_REQUEST;
+        statusCode = httpStatus.BAD_REQUEST;
         message = "Reference error in the application. Please verify your input.";
         errorMessages = [
             {
@@ -154,7 +149,7 @@ const GlobalErrorHandler = (error, req, res, next) => {
         message,
         errorMessages,
         err: error,
-        stack: config_1.default.env !== "production" ? error?.stack : undefined,
+        stack: config.env !== "production" ? error?.stack : undefined,
     });
 };
-exports.default = GlobalErrorHandler;
+export default GlobalErrorHandler;

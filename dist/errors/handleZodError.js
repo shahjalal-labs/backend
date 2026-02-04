@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const handleZodError = (error) => {
     const errors = error.issues.map((issue) => {
         return {
@@ -14,4 +12,4 @@ const handleZodError = (error) => {
         errorMessages: errors,
     };
 };
-exports.default = handleZodError;
+export default handleZodError;

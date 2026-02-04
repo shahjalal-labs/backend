@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 // Function to parse Prisma validation error messages
 const parsePrismaValidationError = (errorMessage) => {
     // Parse missing argument errors
@@ -26,4 +24,4 @@ const parsePrismaValidationError = (errorMessage) => {
         : "";
     return `${missingFieldsMessage}${missingFieldsMessage && invalidValuesMessage ? "; " : ""}${invalidValuesMessage}`;
 };
-exports.default = parsePrismaValidationError;
+export default parsePrismaValidationError;

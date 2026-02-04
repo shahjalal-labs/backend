@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const handleClientError = (error) => {
     let errors = [];
     let message = "";
@@ -30,5 +28,5 @@ const handleClientError = (error) => {
         errorMessages: errors,
     };
 };
-exports.default = handleClientError;
+export default handleClientError;
 //"//\nInvalid `prisma.semesterRegistration.delete()` invocation:\n\n\nAn operation failed because it depends on one or more records that were required but not found. Record to delete does not exist.",

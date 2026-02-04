@@ -2,6 +2,7 @@
   "name": "ashmaster-backend",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node ./dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -52,9 +53,10 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.16",
     "nodemon": "^3.1.4",
+    "stripe": "^20.0.0",
     "uuid": "^13.0.0",
+    "winston": "^3.19.0",
     "ws": "^8.19.0",
-    "zod": "^3.23.8",
-    "stripe": "^20.0.0"
+    "zod": "^3.23.8"
   }
 }

@@ -3,8 +3,6 @@ import cors from "cors";
 import GlobalErrorHandler from "./app/middlewares/globalErrorHandler";
 import path from "path";
 import { router } from "./app/routes";
-import { bullBoardRouter } from "./jobs/bullBoard";
-import basicAuth from "express-basic-auth";
 import { entryMessage } from "./app/middlewares/entry";
 import { notFound } from "./app/middlewares/notFound";
 import helmet from "helmet";
@@ -21,7 +19,7 @@ app.get("/", entryMessage);
 // Router setup
 app.use("/api/v1", router);
 
-app.use(
+/* app.use(
   "/bull",
   basicAuth({
     users: {
@@ -30,7 +28,7 @@ app.use(
     challenge: true,
   }),
   bullBoardRouter,
-);
+); */
 
 // app.use("/bull", bullBoardRouter); // No auth
 

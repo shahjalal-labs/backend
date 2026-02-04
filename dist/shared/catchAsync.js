@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const catchAsync = (fn) => {
     return async (req, res, next) => {
         try {
@@ -10,4 +8,4 @@ const catchAsync = (fn) => {
         }
     };
 };
-exports.default = catchAsync;
+export default catchAsync;

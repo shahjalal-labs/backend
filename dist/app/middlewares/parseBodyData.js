@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseBodyData = void 0;
-const parseBodyData = (req, res, next) => {
+export const parseBodyData = (req, res, next) => {
     if (req.body.bodyData) {
         // console.log(req.body.bodyData);
         try {
@@ -16,4 +13,3 @@ const parseBodyData = (req, res, next) => {
     }
     next();
 };
-exports.parseBodyData = parseBodyData;

@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.pick = void 0;
 //
-const pick = (obj, keys) => {
+export const pick = (obj, keys) => {
     const finalObj = {};
     for (const key of keys) {
         if (obj && Object.hasOwnProperty.call(obj, key)) {
@@ -12,7 +9,6 @@ const pick = (obj, keys) => {
     // console.log(finalObj, "[1;31mfinalObj in pick.ts at line 7[0m");
     return finalObj;
 };
-exports.pick = pick;
 // pick return value like this
 /*
  {

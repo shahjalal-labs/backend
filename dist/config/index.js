@@ -1,17 +1,11 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ENV = void 0;
-const dotenv_1 = __importDefault(require("dotenv"));
-const path_1 = __importDefault(require("path"));
-dotenv_1.default.config({ path: path_1.default.join(process.cwd(), ".env") });
-exports.ENV = {
+import dotenv from "dotenv";
+import path from "path";
+dotenv.config({ path: path.join(process.cwd(), ".env") });
+export const ENV = {
     DEVELOPMENT: "development",
     PRODUCTION: "production",
 };
-exports.default = {
+export default {
     env: process.env.NODE_ENV,
     port: process.env.PORT,
     backend_base_url: process.env.BACKEND_BASE_URL,

@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.forgotPasswordOtp = exports.accountVerification = void 0;
 // account verification email template while create user
-const accountVerification = (fullname, otp) => {
+export const accountVerification = (fullname, otp) => {
     return `
   <div style="
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
@@ -66,9 +63,8 @@ const accountVerification = (fullname, otp) => {
   </div>
 `;
 };
-exports.accountVerification = accountVerification;
 // forgot pass email template
-const forgotPasswordOtp = (otp) => {
+export const forgotPasswordOtp = (otp) => {
     return `
         <div style="font-family: Arial, sans-serif; color: #333;">
           <h2>Password Reset Request</h2>
@@ -80,4 +76,3 @@ const forgotPasswordOtp = (otp) => {
         </div>
       `;
 };
-exports.forgotPasswordOtp = forgotPasswordOtp;

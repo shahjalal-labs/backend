@@ -1,10 +1,5 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const ioredis_1 = __importDefault(require("ioredis"));
-const redisClient = new ioredis_1.default({
+import IORedis from "ioredis";
+const redisClient = new IORedis({
     host: process.env.REDIS_HOST || "localhost",
     port: parseInt(process.env.REDIS_PORT || "6379"),
     password: process.env.REDIS_PASSWORD,
@@ -15,4 +10,4 @@ const redisClient = new ioredis_1.default({
 redisClient.on("error", (err) => {
     console.error("Redis Error:", err.message);
 });
-exports.default = redisClient;
+export default redisClient;
